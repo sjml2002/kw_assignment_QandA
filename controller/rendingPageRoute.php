@@ -24,10 +24,14 @@
         else if($_GET['pageURL'] === "loginMain"){ //연결 요청 적기 (else if문)
             header('Location: /view/loginMain.html');
         }
+        else if($_GET['pageURL'] == "signupMain") {
+            header('Location: /view/signupMain.html');
+        }
         else{
             throw new exception("404");
         }
-    } catch(exception $e){
+    } 
+    catch(exception $e){
         if($e->getMessage() === "400"){
             header('Location: /view/errorPage/400BadRequest.html');
         }

@@ -1,23 +1,105 @@
 <!DOCTYPE html>
 <html lang="ko">
 	<head>
-		<title> 릴레이 만화/소설 메인페이지</title>
+		<title> 광운대 과제 Q&A </title>
 		<meta charset="utf-8" content-type="application/json" />
 	</head>
 
 	<script>
 		window.onload = function(){
-			const response = new Response();
-			console.log(response.headers.get('Location'));
+			HttpRequest();
+			//httpRequest로 데이터 보내기 (withDataPageRouting.php에만 적용)
+			function HttpRequest(){
+				const Data = JSON.stringify({
+					pageURL: "SessionVerify"
+				});
+				const url = "/controller/withDataPageRoute.php?data=" + Data;
+
+				request = new XMLHttpRequest();
+				request.open("POST", url, true);
+				request.setRequestHeader("Content-type", "application/json");
+				request.send(); //$_GET['data']
+				//get response
+				request.onreadystatechange = function() {
+					if(request.readyState===XMLHttpRequest.DONE){
+						console.log(request.response); //Debuging
+						const loginDIV = document.getElementById("loginDIV");
+						const logoutDIV = document.getElementById("logoutDIV");
+						if(request.response !== "false") {
+							const id = request.response;
+							//세션값 정상
+							const userIDinfo = document.getElementById("userIDinfo");
+							userIDinfo.innerHTML = "안녕하세요! " + id + "님!";
+							loginDIV.style.display = "none";
+							logoutDIV.style.display = "block";
+						}
+						else{
+							loginDIV.style.display = "block";
+							logoutDIV.style.display = "none";
+						}
+						//조건이 거짓이라면 비로그인이거나 세션값이 비정상임
+					}
+				}
+			}
 		}
+
+		function logoutRequest() {
+            const logoutData = JSON.stringify({
+                pageURL: "LogoutProcess",
+            });
+            const url = "/controller/withDataPageRoute.php?data=" + logoutData;
+            HttpRequest(url);
+		}
+
+		//httpRequest로 데이터 보내기 (withDataPageRouting.php에만 적용)
+        function HttpRequest(url){
+            request = new XMLHttpRequest();
+            request.open("GET", url, true);
+            request.setRequestHeader("Content-type", "application/json");
+            request.send(); //$_GET['data']
+            //get response
+            request.onreadystatechange = function() {
+                if(request.readyState===XMLHttpRequest.DONE){
+                    console.log(request.response);
+                    if(request.response === "true") {
+                        window.location.href = "../index.html";
+                    }
+                    else{
+                        alert("로그아웃에 실패했습니다. 다시 시도해주세요.");
+                    }
+                }
+            }
+        }
 	</script>
 
 	<body>
 		<h1> 안녕 세상아! hello world! </h1>
+
+		<!-- 로그인 -->
+		<div id="loginDIV">
+			<form action="/controller/rendingPageRoute.php" method="GET">
+				<input type="hidden" name="pageURL" value="loginMain"/>
+				<input type="hidden" name="returnPageURL" value="loginMain.html"/>
+				<button> 로그인 </button>
+			</form>
+		</div>
+		<!-- 로그아웃 -->
+		<div id="logoutDIV" style="display:none">
+			<p id="userIDinfo"> </p>
+			<form action="/controller/withDataPageRoute.php" method="GET">
+				<button type="button" onclick="logoutRequest()"> 로그아웃 </button>
+			</form>
+		</div>
+
+		&nbsp; &nbsp;
+		
+		<!-- 회원가입 -->
 		<form action="/controller/rendingPageRoute.php" method="GET">
-			<input type="hidden" name="pageURL" value="loginMain"/>
-			<input type="hidden" name="returnPageURL" value="loginMain.html"/>
-			<button> 로그인 </button>
+			<input type="hidden" name="pageURL" value="signupMain"/>
+			<input type="hidden" name="returnPageURL" value="signupMain.html"/>
+			<button> 회원가입 </button>
 		</form>
+
+		
 	</body>
 </html>

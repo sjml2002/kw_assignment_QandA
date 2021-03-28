@@ -1,49 +1,48 @@
 <!DOCTYPE html>
 <html lang="ko">
 	<head>
-		<title> 릴레이 만화/소설 메인페이지</title>
+		<title> 광운대 과제 Q&A </title>
 		<meta charset="utf-8" content-type="application/json" />
 	</head>
 
 	<script>
 		window.onload = function(){
 			const response = new Response();
-			console.log(response.headers.get('Location'));
 		}
 
         function loginSend() {
             const loginForm = document.getElementById("loginForm");
             const id = loginForm.loginID.value;
             const pw = loginForm.loginPW.value;
-            //id 15자이하, 영문숫자만
-            //정규식 if문
 
-            //pw 20자이하, 영문숫자 (특수문자)~, !, @, #, $,* 만
-            //정규식 if문
-
-            const loginData = JSON.parse(JSON.stringify({
+            const loginData = JSON.stringify({
                 id: id,
                 pw: pw,
                 pageURL: "LoginProcess",
                 returnPageURL: "/index.html"
-            }));
-            console.log(loginData);
+            });
+            const url = "/controller/withDataPageRoute.php?data=" + loginData;
+            HttpRequest(url);
+        }
 
-            //httpRequest로 데이터 보내기 (withDataPageRouting.php에만 적용)
+        //httpRequest로 데이터 보내기 (withDataPageRouting.php에만 적용)
+        function HttpRequest(url){
             request = new XMLHttpRequest();
+            request.open("GET", url, true);
+            request.setRequestHeader("Content-type", "application/json");
+            request.send(); //$_GET['data']
             //get response
             request.onreadystatechange = function() {
                 if(request.readyState===XMLHttpRequest.DONE){
-                    alert(request.responseText);
+                    console.log(request.response);
+                    if(request.response === "true") {
+                        window.location.href = "../index.html";
+                    }
+                    else{
+                        alert("아이디나 비밀번호가 다릅니다.");
+                    }
                 }
             }
-            request.open("GET", "/controller/withDataPageRoute.php", true);
-            request.setRequestHeader("Content-type", "application/json");
-            request.send("data=" + loginData); //$_GET['data']
-
-            // loginForm.action="/controller/withDataPageRoute.php";
-            // loginForm.method="GET";
-            // loginForm.submit();
         }
 	</script>
 

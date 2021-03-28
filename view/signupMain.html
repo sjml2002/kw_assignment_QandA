@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<title> 광운대 과제 Q&A </title>
+		<meta charset="utf-8" content-type="application/json" />
+	</head>
+
+	<script>
+		window.onload = function(){
+			const response = new Response();
+		}
+
+        function signupSend() {
+            const signupForm = document.getElementById("signupForm");
+            const id = signupForm.ID.value;
+            const pw = signupForm.PW.value;
+
+            //id 5자이상 20자이하 영문숫자만
+            const idReg = /^[a-z0-9]{6,20}$/;
+            const pwReg = /^[a-z0-9!@#$*]{8,20}$/;
+            if(!idReg.test(id)) {
+                //id 정규식 검사
+                //id는 6~20자 영문숫자로만
+                alert("id는 6~20자로 영문, 숫자로 입력해주세요. ")
+            }
+            else if(!pwReg.test(pw)) {
+                //pw 정규식
+                //pw 8자~20자이하, 영문숫자 (특수문자)~, !, @, #, $,* 만
+                alert("비밀번호는 8~20자로 영문, 숫자, 특수문자(~,!,@,#,$,*)로 입력해주세요.");
+            }
+            else { //id, pw 조건 통과 시
+                const signupData = JSON.stringify({
+                    id: id,
+                    pw: pw,
+                    pageURL: "SignupProcess",
+                    returnPageURL: "/index.html"
+                });
+                const url = "/controller/withDataPageRoute.php?data=" + signupData;
+                HttpRequest(url);
+            }
+        }
+
+        //httpRequest로 데이터 보내기 (withDataPageRouting.php에만 적용)
+        function HttpRequest(url){
+            request = new XMLHttpRequest();
+            request.open("POST", url, true);
+            request.setRequestHeader("Content-type", "application/json");
+            request.send(); //$_GET['data']
+            //get response
+            request.onreadystatechange = function() {
+                if(request.readyState===XMLHttpRequest.DONE){
+                    console.log(request.response); //Debuging
+                    if(request.response === "true") {
+                        alert("회원가입 성공!");
+                        window.location.href = "../index.html";
+                    }
+                    else{
+                        alert("아이디가 중복이거나 다른 이유로 인해 회원가입이 되지 않았습니다. \n다시 시도해주십시오.")
+                    }
+                }
+            }
+        }
+	</script>
+
+	<body>
+		<h1> 회원가입 페이지 </h1>
+		<form id="signupForm">
+            <input type="text" id="ID" placeholder="아이디 입력" /> <br>
+            <p> id는 6~20자로 영문, 숫자로 입력해주세요. </p>
+            <input type="password" id="PW" placeholder="비밀번호 입력" /> <br>
+            <p> 비밀번호는 8~20자로 영문, 숫자, 특수문자(~,!,@,#,$,*)로 입력해주세요. </p>
+			<button type="button" onclick="signupSend()"> 회원가입 </button>
+		</form>
+	</body>
+</html>
